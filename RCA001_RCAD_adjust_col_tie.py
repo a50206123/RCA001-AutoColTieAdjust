@@ -11,7 +11,7 @@ UPDATE DATE  :
 VERSION      : v2.0
 UPDATE       :
     1. Update to 113 RC code
-    2. r
+    2. Fix the message dialoge updating criteria
 
 """    
 
