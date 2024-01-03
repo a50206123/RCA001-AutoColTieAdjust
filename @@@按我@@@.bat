@@ -1,3 +1,3 @@
-python RCA001_QT.py
+python RCA001_UI.py
 
 pause()
