@@ -31,7 +31,8 @@ global new_msg
 global isEnd
 new_msg = ''
 isEnd = False
-isRun = False
+#isRun = False
+isAddMsg = False
 
 class show_process(QThread) :
     #### For pyQT5
@@ -41,28 +42,29 @@ class show_process(QThread) :
     def run(self) :
         global new_msg
         global isEnd
-        global isRun
+        global isAddMsg
         
         while True :
-            if not isEnd and isRun :
+            if not isEnd and isAddMsg :
                 self.show_text.emit(new_msg)
-                time.sleep(1)
-            elif not isEnd and not isRun: 
-                time.sleep(1)
+                isAddMsg = False
+                #time.sleep(1)
+            elif not isEnd and not isAddMsg: 
+                pass
             else :
                 self.end_info.emit()
                 isEnd = False
-                isRun = False
-                
-                time.sleep(5)
+                #isRun = False
+                isAddMsg = False
+                #time.sleep(5)
 
 def new_msg_input(s) :
     #### Send to GUI and Print in console
     global new_msg
     new_msg += (s + '\n')
-    
     print(s)
     
+    isAddMsg = True
 
 def main() :
     global isEnd
