@@ -32,7 +32,7 @@ global isEnd
 new_msg = ''
 isEnd = False
 #isRun = False
-isAddMsg = False
+isAddMsg = True
 
 class show_process(QThread) :
     #### For pyQT5
