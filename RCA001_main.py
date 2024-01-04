@@ -139,7 +139,7 @@ def main() :
     
 
 def read_tie_demand(file) :
-    df = pd.read_excel(file, sheet_name = 'RCA001')
+    df = pd.read_excel(file, sheet_name = 'RCA001', engine="openpyxl")
 
     tie_demand = {}
     
