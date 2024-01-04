@@ -2,15 +2,15 @@
 # -*- coding: utf-8 -*-
 """
 
-PROGRAM      : RCA001_QT
+PROGRAM      : RCA001_UI
 DESPRIPITION : RCA001的GUI
 
 AUTHOR       : YUCHEN LIN
-CREATE DATE  : 2023.07.29
+CREATE DATE  : 2024.01.04
 UPDATE DATE  : -
-VERSION      : v1.0
+VERSION      : v2.0
 UPDATE       :
-    1. 
+    1. Update by RCA001 V.2.0
 
 """   
 
@@ -21,7 +21,7 @@ import sys
 import time
 
 import yc_qt as ycqt
-import RCA001_RCAD_adjust_col_tie as rca001
+import RCA001_main as rca001
 
 class main_window(ycqt.process_windows) :
     def __init__ (self, parent = None,
@@ -31,6 +31,9 @@ class main_window(ycqt.process_windows) :
         
         self.setWindowTitle(win_title)
         self.thread = rca001.show_process() ## assign
+    
+        self.setFixedWidth(566)
+        self.setFixedHeight(800)
     
         self.button_start.clicked.connect(self.slotStart)
         self.button_end.clicked.connect(self.close)

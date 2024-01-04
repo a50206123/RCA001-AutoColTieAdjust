@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 """
 
-PROGRAM      : RCA001 RCAD Adjust the column tie
+PROGRAM      : RCA001-AutoColTieAdjust
 DESPRIPITION : 順柱繫筋
 
 AUTHOR       : YUCHEN LIN
-CREATE DATE  : 2024.01.03
+CREATE DATE  : 2024.01.04
 UPDATE DATE  : 
 VERSION      : v2.0
 UPDATE       :
@@ -49,17 +49,18 @@ class show_process(QThread) :
                 self.show_text.emit(new_msg)
                 isAddMsg = False
                 #time.sleep(1)
-            elif not isEnd and not isAddMsg: 
-                pass
-            else :
+            elif isEnd :
                 self.end_info.emit()
                 isEnd = False
                 #isRun = False
-                isAddMsg = False
                 #time.sleep(5)
+            else : 
+                pass
 
 def new_msg_input(s) :
     #### Send to GUI and Print in console
+    global isAddMsg
+    
     global new_msg
     new_msg += (s + '\n')
     print(s)
@@ -89,9 +90,23 @@ def main() :
             if 'RCAD柱調整' in tmp :
                 col_excel = tmp
                 break
-        
-        tie_demand = read_tie_demand(col_excel)
-        new_msg_input('- 讀取柱excel成功 (%s)' % col_excel)
+                    
+        try :
+            new_msg_input('- 讀取柱excel中... (%s)' % col_excel)
+            tie_demand = read_tie_demand(os.path.join(os.getcwd(),col_excel))
+            new_msg_input('- 讀取柱excel成功 (%s)' % col_excel)
+        except :
+            new_msg_input('- 讀取柱excel失敗!!! 請確認是否有放進資料夾 !!!')
+            # msgBox = QMessageBox.about('重大錯誤!!!!', '讀取柱excel失敗!!! 請確認是否有放進資料夾 !!!')
+            
+            msgBox = QMessageBox()
+            msgBox.setText('讀取柱excel失敗!!! 請確認是否有放進資料夾 !!!')
+            msgBox.setWindowTitle('重大錯誤')
+            msgBox.setStandardButtons(QMessageBox.Ok)
+            msgBox.exec()
+            
+            tie_demand = None
+            
     else :
         new_msg_input('- 未讀取柱excel!!!')
         tie_demand = None
