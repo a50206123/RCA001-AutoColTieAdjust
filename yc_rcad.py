@@ -1071,6 +1071,7 @@ class rcol2019(rcol2016) :
                 # Modify rebar and tie
                 block_rebar = block[(k+2):(k+4)]
                 db_rebar = idb['rebar']
+                db_sect = idb['section']
                 for xy in range(2) :
                     block_rebar = block[k+2+xy].split()
                     
@@ -1079,7 +1080,17 @@ class rcol2019(rcol2016) :
                     block_rebar = block_rebar + db_rebar[1][xy]
                     
                     block[k+2+xy] = ('%10s'*len(block_rebar) + '\n') % tuple(block_rebar)
-                
+
+                # Modify stirrup
+                stir = idb['stirrup']
+                block_stir = ' '*37
+                for kk in range(3) :
+                    istir = stir[kk]
+                    block_stir += f'    {istir[0]}@{istir[1]}'
+
+                    if kk == 1 :
+                        block_stir += f',{max(db_sect)}'
+                block[k+4] = block_stir    
             
             blocks[j] = block
                 
