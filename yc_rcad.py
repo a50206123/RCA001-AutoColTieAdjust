@@ -961,7 +961,7 @@ class rcol2019(rcol2016) :
 
     #####    
     def extract_col_rebar(self) :
-        block_list = []
+        block_list = [] 
         s = self.rcol_datas
         
         isStart = False
@@ -1090,7 +1090,7 @@ class rcol2019(rcol2016) :
 
                     if kk == 1 :
                         block_stir += f',{max(db_sect)}'
-                block[k+4] = block_stir    
+                block[k+4] = block_stir + '\n'
             
             blocks[j] = block
                 
@@ -1212,3 +1212,5 @@ def modify_tie(rebar, new_tie_num) :
 
 # print(rcol.modify_tie(rebar,3))
 
+if __name__ == '__main__' :
+    rcol2019()

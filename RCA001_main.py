@@ -156,7 +156,7 @@ def read_tie_demand(file) :
     for row in range(len(df)) :
         if not np.isnan(df['nx'][row]) :
             tie_demand[df['Flr.Col.'][row]] = [int(df['nx'][row]), int(df['ny'][row])]
-            stir[df['Flr.Col.'][row]] = [df['#'][row], int(df['spacing'][row])]
+            stir[df['Flr.Col.'][row]] = [df['stir#'][row], int(df['spacing'][row])]
             
     return tie_demand, stir
 
@@ -227,6 +227,8 @@ def adjust_tie(dbs, block, tie_demand) :
     block1 = block[2:7]
     story1 = block1[0].split()[0]
     db1 = dbs[find_db_pos(dbs, story1+col_name)]
+
+    db1 = least_1_tie(db1)
     
     for i in range(7, len(block), 5) :
         block2 = block[i:i+5]
@@ -273,20 +275,7 @@ def adjust_tie(dbs, block, tie_demand) :
                     ]
         
     	#### Check if no tie when min. side >= 40cm
-        if (min(width, height) >= 40.0) :
-            for j in range(len(tie2)) :
-                rebar = db2['rebar'][1][j]
-                irebar = rebar[j]
-                if len(irebar) == 2 :
-                    irebar.append(irebar[1])
-                    irebar[1][0] = '1'
-                    db2['rebar'][1] = ' '.join(irebar)
-                    
-
-                if tie2[j] < 1 :
-                    tie2[j] = 1
-                    db2['rebar'][1][j] = rd.modify_tie(rebar, tie2[j])
-                    new_msg_input(f'--- {db2["col_name"]} 柱寬超過40cm，繫筋至少1支調整')
+        db2 = least_1_tie(db2)
 
     
         db2['tie'] = tuple(tie2)
@@ -298,6 +287,27 @@ def adjust_tie(dbs, block, tie_demand) :
         dbs[find_db_pos(dbs, story2+col_name)] = db2
     
     return dbs
+
+def least_1_tie(db) :
+    width, height = db['section']
+    tie = list(db['tie'])
+
+    if (min(width, height) >= 40.0) :
+        for j in range(len(tie)) :
+            rebar = db['rebar'][1][j]
+
+            if len(rebar) == 2 :
+                rebar.append(rebar[1])
+                # irebar[1][0] = '1'
+                # db2['rebar'][1][j] = rebar
+                
+
+            if tie[j] < 1 :
+                tie[j] = 1
+                db['rebar'][1][j] = rd.modify_tie(rebar, tie[j])
+                new_msg_input(f'--- {db["col_name"]} 柱寬超過40cm，繫筋至少1支調整')
+    
+    return db
 
 def adjust_B1F_col_tie(db) :
     direction = ['X', 'Y']
