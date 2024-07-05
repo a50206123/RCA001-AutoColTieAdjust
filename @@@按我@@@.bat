@@ -1,3 +1,3 @@
-python RCA001_UI.py
+python main.py
 
 pause()
