@@ -74,6 +74,9 @@ class Main(QThread) :
         super().__init__()
 
         self.isReadExcel = isReadExcel
+        self.checkAixalForceControl = False
+
+        # self.fid = open('log.txt', 'w')
 
     # MAIN PROCEDURE
     def run(self) :
@@ -141,6 +144,12 @@ class Main(QThread) :
                 tie_demand = None
                 stir = None
             
+            try :
+                isPuControl = self.read_checkPuControl(os.path.join(os.getcwd(),col_excel))
+                self.checkAixalForceControl = True
+            except :
+                isPuControl = None
+
         else :
             self.add_msg('- 未讀取柱excel!!!')
             tie_demand = None
@@ -148,6 +157,7 @@ class Main(QThread) :
         
         self.tie_demand = tie_demand
         self.stir = stir
+        self.isPuControl = isPuControl
 
     # READ TIE DEMAND
     def read_tie_demand(self, file) :
@@ -162,6 +172,17 @@ class Main(QThread) :
                 stir[df['Flr.Col.'][row]] = [df['stir#'][row], int(df['spacing'][row])]
                 
         return tie_demand, stir
+    
+    def read_checkPuControl(self, file) :
+        df = pd.read_excel(file, sheet_name = 'RCA001', engine="openpyxl")
+
+        isPuControl = {}
+
+        for row in range(len(df)) :
+            if not np.isnan(df['nx'][row]) :
+                isPuControl[df['Flr.Col.'][row]] = df["Pu>0.3fc'Ag"][row]
+                
+        return isPuControl
 
     # CHECK TIE DEMAND
     def tie_demand_check(self) :
@@ -186,6 +207,13 @@ class Main(QThread) :
             except :
                 self.add_msg('-- 最小繫筋讀取未成功 !!!! (%s)' % col_name)
                 continue
+
+            if self.checkAixalForceControl :
+                if self.isPuControl[col_name] == 'Yes' :
+                    self.add_msg(f'--- 軸力控制滿箍 ({col_name})')
+                    isTieFull = True
+                else :
+                    isTieFull = False
             
             ties = list(db['tie'])
             rebar = db['rebar'][1]
@@ -194,7 +222,11 @@ class Main(QThread) :
             
             for n in range(2) :
                 tie_n = ties[n]
-                nn = nxy[n]
+                
+                if isTieFull :
+                    nn = max(len(rebar[n])-2, nxy[n])
+                else :
+                    nn = nxy[n]
                 
                 # Tie Between per 2 rebar
                 if tie_n < math.floor((len(rebar[n])-2)/2) :
