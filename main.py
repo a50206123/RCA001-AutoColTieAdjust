@@ -207,13 +207,12 @@ class Main(QThread) :
             except :
                 self.add_msg('-- 最小繫筋讀取未成功 !!!! (%s)' % col_name)
                 continue
-
+            
+            isTieFull = False
             if self.checkAixalForceControl :
                 if self.isPuControl[col_name] == 'Yes' :
                     self.add_msg(f'--- 軸力控制滿箍 ({col_name})')
                     isTieFull = True
-                else :
-                    isTieFull = False
             
             ties = list(db['tie'])
             rebar = db['rebar'][1]
