@@ -325,7 +325,7 @@ class Main(QThread) :
                             ]
                 
                 #### Check if no tie when min. side >= 40cm
-                db2 = least_1_tie(db2)
+                db2 = self.least_1_tie(db2)
 
             
                 db2['tie'] = tuple(tie2)
@@ -365,6 +365,27 @@ class Main(QThread) :
                 db['tie'] = tuple(tie)
 
                 self.dbs = dbs 
+                
+    def least_1_tie(self, db) :
+        width, height = db['section']
+        tie = list(db['tie'])
+
+        if (min(width, height) >= 40.0) :
+            for j in range(len(tie)) :
+                rebar = db['rebar'][1][j]
+
+                if len(rebar) == 2 :
+                    rebar.append(rebar[1])
+                    # irebar[1][0] = '1'
+                    # db2['rebar'][1][j] = rebar
+                    
+
+                if tie[j] < 1 :
+                    tie[j] = 1
+                    db['rebar'][1][j] = rd.modify_tie(rebar, tie[j])
+                    self.add_msg(f'--- {db["col_name"]} 柱寬超過40cm，繫筋至少1支調整')
+
+        return db
 
 class ErroMsgBox():
     def __init__(self, msg):
@@ -377,26 +398,6 @@ class ErroMsgBox():
 
         self.msg_box = msg_box
 
-def least_1_tie(db) :
-    width, height = db['section']
-    tie = list(db['tie'])
-
-    if (min(width, height) >= 40.0) :
-        for j in range(len(tie)) :
-            rebar = db['rebar'][1][j]
-
-            if len(rebar) == 2 :
-                rebar.append(rebar[1])
-                # irebar[1][0] = '1'
-                # db2['rebar'][1][j] = rebar
-                
-
-            if tie[j] < 1 :
-                tie[j] = 1
-                db['rebar'][1][j] = rd.modify_tie(rebar, tie[j])
-                self.add_msg(f'--- {db["col_name"]} 柱寬超過40cm，繫筋至少1支調整')
-
-    return db
 def find_db_pos(db, story_colname) :
     #### To find the position of one coluimn in database
     for idx in range(len(db)) :
