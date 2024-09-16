@@ -270,7 +270,7 @@ class Main(QThread) :
             story1 = block1[0].split()[0]
             db1 = dbs[find_db_pos(dbs, story1+col_name)]
 
-            db1 = least_1_tie(db1)
+            db1 = self.least_1_tie(db1)
             
             for i in range(7, len(block), 5) :
                 block2 = block[i:i+5]
